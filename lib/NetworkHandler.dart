@@ -103,6 +103,18 @@ class NetworkHandler {
     return response;
   }
 
+  Future<http.StreamedResponse> postFile(String url, String filepath) async{
+    url = formater(url);
+    String? token = await storage.read(key: "token");
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+    request.files.add(await http.MultipartFile.fromPath("uploadfile", filepath));
+    request.headers.addAll({
+      "Content-type": "multipart/form-data"
+    });
+    var response = request.send();
+    return response;
+  }
+
   String formater(String url)
   {
     return baseurl+url;
