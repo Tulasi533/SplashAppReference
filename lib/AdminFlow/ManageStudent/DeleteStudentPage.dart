@@ -41,6 +41,8 @@ class _DeleteStudentPageState extends State<DeleteStudentPage> {
       backgroundColor: Color(0xFF09488D),
       appBar: AppBar(
         elevation: 0,
+        title: Text("Search Student to Delete"),
+        centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () {
@@ -90,7 +92,7 @@ class _DeleteStudentPageState extends State<DeleteStudentPage> {
                   borderRadius: BorderRadius.circular(50)
                 ),
               ),
-              onChanged: (value) => searchAdmin(value),
+              onChanged: (value) => searchStudent(value),
             ),
           ),
           Expanded(
@@ -149,7 +151,7 @@ class _DeleteStudentPageState extends State<DeleteStudentPage> {
     );
   }
 
-  void searchAdmin(String query) {
+  void searchStudent(String query) {
     List<StudentModel>? results = [];
     if(query.isEmpty){
       results = [];

@@ -28,7 +28,7 @@ class _DeleteAdminPageState extends State<DeleteAdminPage> {
   }
 
   void fetchData() async{
-    var response = await networkHandler.get("/admin/getAllData");
+    var response = await networkHandler.get("/admin/getOtherData");
     superAdminModel = SuperAdminModel.fromJson(response);
     setState(() {
       data = superAdminModel.data;
@@ -41,6 +41,8 @@ class _DeleteAdminPageState extends State<DeleteAdminPage> {
     return Scaffold(
       backgroundColor: Color(0xFF09488D),
       appBar: AppBar(
+        title: Text("Search Admin to Delete"),
+        centerTitle: true,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.white),

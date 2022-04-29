@@ -74,7 +74,7 @@ class NetworkHandler {
     return response;
   }
 
-  Future<http.Response> patch(String url, Map<String, String> body) async
+  Future<http.Response> patch(String url, Map<String, dynamic> body) async
   {
     String? token = await storage.read(key: "token");
     url = formater(url);

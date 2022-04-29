@@ -41,6 +41,8 @@ class _DeleteFacultyPageState extends State<DeleteFacultyPage> {
       backgroundColor: Color(0xFF09488D),
       appBar: AppBar(
         elevation: 0,
+        title: Text("Search Faculty to Delete"),
+        centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.white),
           onPressed: () {
@@ -90,7 +92,7 @@ class _DeleteFacultyPageState extends State<DeleteFacultyPage> {
                   borderRadius: BorderRadius.circular(50)
                 ),
               ),
-              onChanged: (value) => searchAdmin(value),
+              onChanged: (value) => searchFaculty(value),
             ),
           ),
           Expanded(
@@ -149,7 +151,7 @@ class _DeleteFacultyPageState extends State<DeleteFacultyPage> {
     );
   }
 
-  void searchAdmin(String query) {
+  void searchFaculty(String query) {
     List<FacultyModel>? results = [];
     if(query.isEmpty){
       results = [];

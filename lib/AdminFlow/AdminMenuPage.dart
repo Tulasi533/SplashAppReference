@@ -221,7 +221,7 @@ class _AdminMenuPageState extends State<AdminMenuPage> {
               color: Color(0xFFFFE0E6),
               fontFamily: "QuickSand",
               fontWeight: FontWeight.bold,
-              overflow: TextOverflow.ellipsis
+              overflow: TextOverflow.visible
             ),
           )
           )
