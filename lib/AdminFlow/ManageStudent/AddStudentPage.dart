@@ -18,7 +18,7 @@ class _AddStudentPageState extends State<AddStudentPage> {
     return Scaffold(
       backgroundColor: Color(0xFF09488D),
       appBar: AppBar(
-        title: Text("Add Faculty"),
+        title: Text("Add Student"),
         centerTitle: true,
         elevation: 0,
         leading: IconButton(
@@ -47,6 +47,11 @@ class _AddStudentPageState extends State<AddStudentPage> {
                 final result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['xlsx'],);
 
                 if (result != null) {
+                  setState((){
+                    file = result.files.single;
+                    
+                  });
+                  print(file!.name);
                   var response = await networkHandler.postFile("/student/uploadfile", file!.path.toString());
                   if(response.statusCode == 200 || response.statusCode == 201){
                     final snackBar = SnackBar(
@@ -62,11 +67,7 @@ class _AddStudentPageState extends State<AddStudentPage> {
                     );
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   }
-                  setState((){
-                    file = result.files.single;
-                    
-                  });
-                  print(file!.name);
+                  
                 } else {
                   return;
                 }

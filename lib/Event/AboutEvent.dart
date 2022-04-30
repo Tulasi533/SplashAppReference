@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:splash_app/Model/eventModel.dart';
 import 'package:splash_app/NetworkHandler.dart';
+import 'package:date_format/date_format.dart';
 
 class AboutEvent extends StatefulWidget {
   final EventModel item;
@@ -122,7 +123,7 @@ class _AboutEventState extends State<AboutEvent> {
                       cells: <DataCell>[
                         DataCell(Text("Registration End Date")),
                         DataCell(VerticalDivider(color: Colors.black26, thickness: 1.5)),
-                        DataCell(Text(widget.item.regenddate.toString()))
+                        DataCell(Text(convertDateFromString(widget.item.regenddate.toString())))
                       ],
                     ),
                     DataRow(
@@ -269,4 +270,9 @@ class _AboutEventState extends State<AboutEvent> {
       )
     );
   }
+  String convertDateFromString(String strDate){
+    DateTime todayDate = DateTime.parse(strDate);
+    print(todayDate);
+    return formatDate(todayDate, [d, '-', MM, '-', yyyy, ', ', H, ':', nn]);
+ }
 }

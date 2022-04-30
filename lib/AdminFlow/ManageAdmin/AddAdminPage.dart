@@ -50,6 +50,11 @@ class _AddAdminPageState extends State<AddAdminPage> {
                 final result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['xlsx'],);
 
                 if (result != null) {
+                  setState((){
+                    file = result.files.single;
+                    
+                  });
+                  print(file!.name);
                   var response = await networkHandler.postFile("/admin/uploadfile", file!.path.toString());
                   if(response.statusCode == 200 || response.statusCode == 201){
                     final snackBar = SnackBar(
@@ -65,11 +70,7 @@ class _AddAdminPageState extends State<AddAdminPage> {
                     );
                     ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   }
-                  setState((){
-                    file = result.files.single;
-                    
-                  });
-                  print(file!.name);
+                  
                 } else {
                   return;
                 }
