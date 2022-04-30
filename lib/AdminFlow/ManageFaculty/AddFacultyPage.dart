@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:splash_app/AdminFlow/ManageFaculty/AddSingleFaculty.dart';
 import 'package:splash_app/NetworkHandler.dart';
 
 class AddFacultyPage extends StatefulWidget {
@@ -46,7 +47,7 @@ class _AddFacultyPageState extends State<AddFacultyPage> {
                 final result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['xlsx'],);
 
                 if (result != null) {
-                  var response = await networkHandler.postFile("/faculty/uploadFile", file!.path.toString());
+                  var response = await networkHandler.postFile("/faculty/uploadfile", file!.path.toString());
                   if(response.statusCode == 200 || response.statusCode == 201){
                     final snackBar = SnackBar(
                       content: const Text("Faculty Data added Successfully"),
@@ -128,7 +129,12 @@ class _AddFacultyPageState extends State<AddFacultyPage> {
             SizedBox(height: 10),
             InkWell(
               onTap: () {
-                
+                Navigator.push(
+                  context, 
+                  MaterialPageRoute(
+                    builder: (context)=> AddSingleFaculty()
+                  )
+                );
               },
               child: Container(
                 width: 250,

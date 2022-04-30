@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:splash_app/AdminFlow/ManageAdmin/AddSingleAdmin.dart';
 import 'package:splash_app/NetworkHandler.dart';
 
 class AddAdminPage extends StatefulWidget {
@@ -49,7 +50,7 @@ class _AddAdminPageState extends State<AddAdminPage> {
                 final result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['xlsx'],);
 
                 if (result != null) {
-                  var response = await networkHandler.postFile("/admin/uploadFile", file!.path.toString());
+                  var response = await networkHandler.postFile("/admin/uploadfile", file!.path.toString());
                   if(response.statusCode == 200 || response.statusCode == 201){
                     final snackBar = SnackBar(
                       content: const Text("Admin Data added Successfully"),
@@ -131,7 +132,12 @@ class _AddAdminPageState extends State<AddAdminPage> {
             SizedBox(height: 10),
             InkWell(
               onTap: () {
-                
+                Navigator.push(
+                  context, 
+                  MaterialPageRoute(
+                    builder: (context)=> AddSingleAdmin()
+                  )
+                );
               },
               child: Container(
                 width: 250,

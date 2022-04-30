@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:splash_app/AdminFlow/ManageStudent/AddSingleStudent.dart';
 import 'package:splash_app/NetworkHandler.dart';
 
 class AddStudentPage extends StatefulWidget {
@@ -46,7 +47,7 @@ class _AddStudentPageState extends State<AddStudentPage> {
                 final result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['xlsx'],);
 
                 if (result != null) {
-                  var response = await networkHandler.postFile("/student/uploadFile", file!.path.toString());
+                  var response = await networkHandler.postFile("/student/uploadfile", file!.path.toString());
                   if(response.statusCode == 200 || response.statusCode == 201){
                     final snackBar = SnackBar(
                       content: const Text("Student Data added Successfully"),
@@ -128,7 +129,12 @@ class _AddStudentPageState extends State<AddStudentPage> {
             SizedBox(height: 10),
             InkWell(
               onTap: () {
-                
+                Navigator.push(
+                  context, 
+                  MaterialPageRoute(
+                    builder: (context)=> AddSingleStudent()
+                  )
+                );
               },
               child: Container(
                 width: 250,

@@ -1,40 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:splash_app/AdminFlow/AdminHomePage.dart';
-import 'package:splash_app/Model/facultyModel.dart';
 import 'package:splash_app/NetworkHandler.dart';
 
-class UpdateCancelFaculty extends StatefulWidget {
-  final String? facultyId;
-  const UpdateCancelFaculty({ Key? key, required this.facultyId}) : super(key: key);
+class AddSingleAdmin extends StatefulWidget {
+  const AddSingleAdmin({ Key? key }) : super(key: key);
 
   @override
-  State<UpdateCancelFaculty> createState() => _UpdateCancelFacultyState();
+  State<AddSingleAdmin> createState() => _AddSingleAdminState();
 }
 
-class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
+class _AddSingleAdminState extends State<AddSingleAdmin> {
   final _globalkey = GlobalKey<FormState>();
   final NetworkHandler networkHandler = NetworkHandler();
-  FacultyModel facultyModel = FacultyModel();
-  final storage = FlutterSecureStorage();
   TextEditingController _name = TextEditingController();
   TextEditingController _mobile = TextEditingController();
+  TextEditingController _adminid = TextEditingController();
+  TextEditingController _password = TextEditingController();
   TextEditingController _email = TextEditingController();
   TextEditingController _college = TextEditingController();
-  TextEditingController _department = TextEditingController();
-  TextEditingController _position = TextEditingController();
-  TextEditingController _qualification = TextEditingController();
-  @override
-  void initState() {
-    super.initState();
-    fetchData();
-  }
-  void fetchData() async {
-    var response = await networkHandler.get("/faculty/getFaculty/${widget.facultyId}");
-    setState(() {
-      facultyModel = FacultyModel.fromJson(response["data"][0]);
-    });
-  }
+  String? errorText;
+  bool validate = false;
+  bool circular = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,45 +34,35 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
           },
         ),
       ),
-      body:Form(
+      body: Form(
         key: _globalkey,
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
           child:ListView(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 120, right: 120),
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: CircleAvatar(
-                    backgroundImage: NetworkHandler().getImage(facultyModel.facultyid.toString()),
-                  ),
-                ),
-              ),
               SizedBox(height: 10),
               Center(
                 child: Text(
-                  facultyModel.facultyid.toString(),
+                  "Add Admin Details",
                   style: TextStyle(
+                    color: Colors.yellow,
                     fontFamily: "QuickSand",
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFFb8f5bc),
-                    fontSize: 20
-                  ),
+                    letterSpacing: 1
+                  )
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 25),
+              adminidTextField(),
+              SizedBox(height: 25),
               nameTextField(),
+              SizedBox(height: 25),
+              passwordTextField(),
               SizedBox(height: 25),
               mobileTextField(),
               SizedBox(height: 25),
               emailTextField(),
-              SizedBox(height: 25),
-              departmentTextField(),
-              SizedBox(height: 25),
-              positionTextField(),
-              SizedBox(height: 25),
-              qualificationTextField(),
               SizedBox(height: 25),
               collegeTextField(),
               SizedBox(height: 30),
@@ -94,30 +70,50 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   InkWell(
-                    onTap: () async{
-                      if(_globalkey.currentState!.validate()){
-                        FacultyModel facultyModel1 = FacultyModel(
-                          name: _name.text, 
-                          mobile: _mobile.text,
-                          email: _email.text,
-                          college: _college.text,
-                          department: _department.text,
-                          position: _position.text,
-                          qualification: _qualification.text
-                        );
-                        var response = await networkHandler.patch("/faculty/updateFaculty/${facultyModel.facultyid}", facultyModel1.ToJson());
-                        print(response.body);
-                        if(response.statusCode == 200 || response.statusCode == 201) {
+                    onTap: () async {
+                      setState(() {
+                        circular = true;
+                      });
+                      await checkUser();
+                      if (_globalkey.currentState!.validate() && validate) {
+                        Map<String, String> data = {
+                          "adminid": _adminid.text,
+                          "name": _name.text,
+                          "email": _email.text,
+                          "password": _password.text,
+                          "mobile": _mobile.text,
+                          "college": _college.text
+                        };
+                        print(data);
+                        var responseRegister = await networkHandler.post("/admin/register", data);
+
+                        if (responseRegister.statusCode == 200 ||
+                            responseRegister.statusCode == 201) {
                           final snackBar = SnackBar(
-                            content: const Text("Faculty Data Updated Successfully"),
+                            content: const Text("Admin Data Added Successfully"),
                             backgroundColor: Colors.green,
                           );
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
                           Navigator.pushAndRemoveUntil(
-                            context, 
-                            MaterialPageRoute(builder: (context) => AdminHomePage()), 
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AdminHomePage(),
+                            ),
                             (route) => false
                           );
+                          setState(() {
+                            circular = false;
+                          });
+                        }
+                        else {
+                          final snackBar = SnackBar(
+                            content: const Text("Something went wrong!!"),
+                            backgroundColor: Colors.red,
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          setState(() {
+                            circular = true;
+                          });
                         }
                       }
                     },
@@ -129,8 +125,10 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
                         borderRadius: BorderRadius.circular(50)
                       ),
                       child: Center(
-                        child: Text(
-                          "Update",
+                        child: circular
+                        ? CircularProgressIndicator()
+                        : Text(
+                          "Add",
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
@@ -174,8 +172,32 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
     );
   }
 
+  checkUser() async {
+    if (_adminid.text.length == 0) {
+      setState(() {
+        // circular = false;
+        validate = false;
+        errorText = "Admin ID Can't be empty";
+      });
+    } else {
+      var response = await networkHandler
+          .get("/admin/checkusername/${_adminid.text}");
+      if (response['Status']) {
+        setState(() {
+          // circular = false;
+          validate = false;
+          errorText = "Admin ID already taken";
+        });
+      } else {
+        setState(() {
+          // circular = false;
+          validate = true;
+        });
+      }
+    }
+  }
+
   Widget nameTextField(){
-    _name.text = facultyModel.name.toString();
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -188,19 +210,65 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
           controller: _name,
           validator: (value) {
             if(value!.isEmpty) {
-              return "Faculty Name can't be empty";
+              return "Admin Name can't be empty";
             }
             else if(value.length > 100){
-              return "Faculty Name length should be <= 100";
+              return "Admin Name length should be <= 100";
             }
             return null;
           },
           decoration: InputDecoration(
-            labelText: "Faculty Name",
+            labelText: "Admin Name",
             labelStyle: TextStyle(
               color: Color(0xFFe4e6eb)
             ),
-            helperText: "Enter your Faculty Name",
+            helperText: "Enter your Admin Name",
+            helperStyle: TextStyle(
+              color: Color(0xFFFFCFD8)
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.lightBlueAccent,
+                width: 2
+              )
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.white,
+              )
+            ),
+          ),
+          maxLength: 100,
+          maxLines: null,
+        )
+      ],
+    );
+  }
+
+  Widget adminidTextField(){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        TextFormField(
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: "QuickSand",
+            fontWeight: FontWeight.w700
+          ),
+          controller: _adminid,
+          validator: (value) {
+            if(value!.isEmpty) {
+              return "Admin ID can't be empty";
+            }
+            return null;
+          },
+          decoration: InputDecoration(
+            errorText: validate ? null : errorText,
+            labelText: "Admin ID",
+            labelStyle: TextStyle(
+              color: Color(0xFFe4e6eb)
+            ),
+            helperText: "Enter Admin ID",
             helperStyle: TextStyle(
               color: Color(0xFFFFCFD8)
             ),
@@ -224,7 +292,6 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
   }
 
   Widget mobileTextField(){
-    _mobile.text = facultyModel.mobile.toString();
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -273,7 +340,6 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
   }
 
   Widget emailTextField(){
-    _email.text = facultyModel.email.toString();
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -286,16 +352,16 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
           controller: _email,
           validator: (value) {
             if(value!.isEmpty) {
-              return "Faculty Email can't be empty";
+              return "Admin Email can't be empty";
             }
             return null;
           },
           decoration: InputDecoration(
-            labelText: "Faculty Email",
+            labelText: "Admin Email",
             labelStyle: TextStyle(
               color: Color(0xFFe4e6eb)
             ),
-            helperText: "Enter Faculty Email",
+            helperText: "Enter your Admin Email",
             helperStyle: TextStyle(
               color: Color(0xFFFFCFD8)
             ),
@@ -311,13 +377,13 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
               )
             ),
           ),
+          maxLines: null,
         )
       ],
     );
   }
 
   Widget collegeTextField(){
-    _college.text = facultyModel.college.toString();
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -330,16 +396,16 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
           controller: _college,
           validator: (value) {
             if(value == null) {
-              return "Faculty College can't be empty";
+              return "Admin College can't be empty";
             }
             return null;
           },
           decoration: InputDecoration(
-            labelText: "Faculty College",
+            labelText: "Admin College",
             labelStyle: TextStyle(
               color: Color(0xFFe4e6eb)
             ),
-            helperText: "Enter Faculty College Name",
+            helperText: "Enter Admin College Name",
             helperStyle: TextStyle(
               color: Color(0xFFFFCFD8)
             ),
@@ -361,8 +427,7 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
     );
   }
 
-  Widget departmentTextField(){
-    _department.text = facultyModel.department.toString();
+  Widget passwordTextField(){
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -372,19 +437,19 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
             fontFamily: "QuickSand",
             fontWeight: FontWeight.w700
           ),
-          controller: _department,
+          controller: _password,
           validator: (value) {
-            if(value == null) {
-              return "Faculty Department can't be empty";
+            if(value!.isEmpty) {
+              return "Admin Password can't be empty";
             }
             return null;
           },
           decoration: InputDecoration(
-            labelText: "Faculty Department",
+            labelText: "Admin Password",
             labelStyle: TextStyle(
               color: Color(0xFFe4e6eb)
             ),
-            helperText: "Enter Faculty Department",
+            helperText: "Enter Admin Password",
             helperStyle: TextStyle(
               color: Color(0xFFFFCFD8)
             ),
@@ -400,97 +465,6 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
               )
             ),
           ),
-          maxLines: null,
-        )
-      ],
-    );
-  }
-
-  Widget positionTextField(){
-    _position.text = facultyModel.position.toString();
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        TextFormField(
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: "QuickSand",
-            fontWeight: FontWeight.w700
-          ),
-          controller: _position,
-          validator: (value) {
-            if(value == null) {
-              return "Faculty Position can't be empty";
-            }
-            return null;
-          },
-          decoration: InputDecoration(
-            labelText: "Faculty Position",
-            labelStyle: TextStyle(
-              color: Color(0xFFe4e6eb)
-            ),
-            helperText: "Enter Faculty position",
-            helperStyle: TextStyle(
-              color: Color(0xFFFFCFD8)
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.lightBlueAccent,
-                width: 2
-              )
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.white,
-              )
-            ),
-          ),
-          maxLines: null,
-        )
-      ],
-    );
-  }
-
-  Widget qualificationTextField(){
-    _qualification.text = facultyModel.qualification.toString();
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        TextFormField(
-          style: TextStyle(
-            color: Colors.white,
-            fontFamily: "QuickSand",
-            fontWeight: FontWeight.w700
-          ),
-          controller: _qualification,
-          validator: (value) {
-            if(value == null) {
-              return "Faculty Qualification can't be empty";
-            }
-            return null;
-          },
-          decoration: InputDecoration(
-            labelText: "Faculty Qualification",
-            labelStyle: TextStyle(
-              color: Color(0xFFe4e6eb)
-            ),
-            helperText: "Enter Faculty Qualification",
-            helperStyle: TextStyle(
-              color: Color(0xFFFFCFD8)
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.lightBlueAccent,
-                width: 2
-              )
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.white,
-              )
-            ),
-          ),
-          maxLines: null,
         )
       ],
     );

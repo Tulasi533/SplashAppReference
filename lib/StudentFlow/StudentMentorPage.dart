@@ -46,7 +46,7 @@ class _StudentMentorPageState extends State<StudentMentorPage> {
       : Center(
         child: ListView(
           children: [
-            SizedBox(height: 60),
+            SizedBox(height: 40),
             Center(
               child: Text(
                 "Mentor Details🧑‍🏫🧑‍🏫",
@@ -59,13 +59,14 @@ class _StudentMentorPageState extends State<StudentMentorPage> {
               ),
             ),
             SizedBox(height: 20),
-            CircleAvatar(
-              radius: 80,
-              //backgroundImage: NetworkHandler().getImage(facultyModel.facultyid.toString()),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(82),
-                child: Image.network("http://192.168.0.103:5000/uploads/${facultyModel.facultyid.toString()}.jpg")
-              )
+            Padding(
+              padding: const EdgeInsets.only(left: 110, right: 110),
+              child: AspectRatio(
+                aspectRatio: 1,
+                child: CircleAvatar(
+                  backgroundImage: (facultyModel.img.toString()).contains(facultyModel.facultyid.toString())? NetworkHandler().getImage(facultyModel.facultyid.toString()): NetworkImage(facultyModel.img.toString()),
+                ),
+              ),
             ),
             SizedBox(height: 30),
             otherDetails("Name", facultyModel.name.toString()),

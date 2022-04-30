@@ -191,7 +191,7 @@ class _UpdateCancelAdminState extends State<UpdateCancelAdmin> {
             labelStyle: TextStyle(
               color: Color(0xFFe4e6eb)
             ),
-            helperText: "Enter your Admin Name",
+            helperText: "Enter Admin Name",
             helperStyle: TextStyle(
               color: Color(0xFFFFCFD8)
             ),
@@ -240,7 +240,7 @@ class _UpdateCancelAdminState extends State<UpdateCancelAdmin> {
             labelStyle: TextStyle(
               color: Color(0xFFe4e6eb)
             ),
-            helperText: "Enter your Mobile Number",
+            helperText: "Enter Mobile Number",
             helperStyle: TextStyle(
               color: Color(0xFFFFCFD8)
             ),
@@ -286,7 +286,7 @@ class _UpdateCancelAdminState extends State<UpdateCancelAdmin> {
             labelStyle: TextStyle(
               color: Color(0xFFe4e6eb)
             ),
-            helperText: "Enter your Admin Email",
+            helperText: "Enter Admin Email",
             helperStyle: TextStyle(
               color: Color(0xFFFFCFD8)
             ),
@@ -330,7 +330,7 @@ class _UpdateCancelAdminState extends State<UpdateCancelAdmin> {
             labelStyle: TextStyle(
               color: Color(0xFFe4e6eb)
             ),
-            helperText: "Enter your Admin College Name",
+            helperText: "Enter Admin College Name",
             helperStyle: TextStyle(
               color: Color(0xFFFFCFD8)
             ),

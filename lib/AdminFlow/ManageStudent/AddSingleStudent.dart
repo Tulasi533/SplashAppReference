@@ -1,40 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:splash_app/AdminFlow/AdminHomePage.dart';
-import 'package:splash_app/Model/facultyModel.dart';
 import 'package:splash_app/NetworkHandler.dart';
 
-class UpdateCancelFaculty extends StatefulWidget {
-  final String? facultyId;
-  const UpdateCancelFaculty({ Key? key, required this.facultyId}) : super(key: key);
+class AddSingleStudent extends StatefulWidget {
+  const AddSingleStudent({ Key? key }) : super(key: key);
 
   @override
-  State<UpdateCancelFaculty> createState() => _UpdateCancelFacultyState();
+  State<AddSingleStudent> createState() => _AddSingleStudentState();
 }
 
-class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
+class _AddSingleStudentState extends State<AddSingleStudent> {
   final _globalkey = GlobalKey<FormState>();
   final NetworkHandler networkHandler = NetworkHandler();
-  FacultyModel facultyModel = FacultyModel();
-  final storage = FlutterSecureStorage();
+  TextEditingController _regno = TextEditingController();
   TextEditingController _name = TextEditingController();
+  TextEditingController _preferredname = TextEditingController();
   TextEditingController _mobile = TextEditingController();
+  TextEditingController _facultyid = TextEditingController();
+  TextEditingController _password = TextEditingController();
   TextEditingController _email = TextEditingController();
   TextEditingController _college = TextEditingController();
-  TextEditingController _department = TextEditingController();
-  TextEditingController _position = TextEditingController();
-  TextEditingController _qualification = TextEditingController();
-  @override
-  void initState() {
-    super.initState();
-    fetchData();
-  }
-  void fetchData() async {
-    var response = await networkHandler.get("/faculty/getFaculty/${widget.facultyId}");
-    setState(() {
-      facultyModel = FacultyModel.fromJson(response["data"][0]);
-    });
-  }
+  TextEditingController _branch = TextEditingController();
+  TextEditingController _academicstart = TextEditingController();
+  TextEditingController _academicend = TextEditingController();
+  String? errorText;
+  bool validate = false;
+  bool circular = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,70 +45,96 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
           padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
           child:ListView(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 120, right: 120),
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: CircleAvatar(
-                    backgroundImage: NetworkHandler().getImage(facultyModel.facultyid.toString()),
-                  ),
-                ),
-              ),
               SizedBox(height: 10),
               Center(
                 child: Text(
-                  facultyModel.facultyid.toString(),
+                  "Add Student Details",
                   style: TextStyle(
+                    color: Colors.yellow,
                     fontFamily: "QuickSand",
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFFb8f5bc),
-                    fontSize: 20
-                  ),
+                    letterSpacing: 1
+                  )
                 ),
               ),
-              SizedBox(height: 20),
+              SizedBox(height: 25),
+              regnoTextField(),
+              SizedBox(height: 25),
               nameTextField(),
+              SizedBox(height: 25),
+              preferrednameTextField(),
+              SizedBox(height: 25),
+              passwordTextField(),
               SizedBox(height: 25),
               mobileTextField(),
               SizedBox(height: 25),
               emailTextField(),
               SizedBox(height: 25),
-              departmentTextField(),
+              branchTextField(),
               SizedBox(height: 25),
-              positionTextField(),
+              academicstartTextField(),
               SizedBox(height: 25),
-              qualificationTextField(),
+              academicendTextField(),
               SizedBox(height: 25),
               collegeTextField(),
+              SizedBox(height: 25),
+              facultyidTextField(),
+              
               SizedBox(height: 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   InkWell(
-                    onTap: () async{
-                      if(_globalkey.currentState!.validate()){
-                        FacultyModel facultyModel1 = FacultyModel(
-                          name: _name.text, 
-                          mobile: _mobile.text,
-                          email: _email.text,
-                          college: _college.text,
-                          department: _department.text,
-                          position: _position.text,
-                          qualification: _qualification.text
-                        );
-                        var response = await networkHandler.patch("/faculty/updateFaculty/${facultyModel.facultyid}", facultyModel1.ToJson());
-                        print(response.body);
-                        if(response.statusCode == 200 || response.statusCode == 201) {
+                    onTap: () async {
+                      setState(() {
+                        circular = true;
+                      });
+                      await checkUser();
+                      if (_globalkey.currentState!.validate() && validate) {
+                        Map<String, String> data = {
+                          "regno": _regno.text,
+                          "name": _name.text,
+                          "preferredname": _preferredname.text,
+                          "email": _email.text,
+                          "password": _password.text,
+                          "mobile": _mobile.text,
+                          "branch": _branch.text,
+                          "academicstart": _academicstart.text,
+                          "academicend": _academicend.text,
+                          "college": _college.text,
+                          "facultyid": _facultyid.text
+                        };
+                        print(data);
+                        var responseRegister = await networkHandler.post("/student/register", data);
+
+                        if (responseRegister.statusCode == 200 ||
+                            responseRegister.statusCode == 201) {
                           final snackBar = SnackBar(
-                            content: const Text("Faculty Data Updated Successfully"),
+                            content: const Text("Student Data Added Successfully"),
                             backgroundColor: Colors.green,
                           );
                           ScaffoldMessenger.of(context).showSnackBar(snackBar);
                           Navigator.pushAndRemoveUntil(
-                            context, 
-                            MaterialPageRoute(builder: (context) => AdminHomePage()), 
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AdminHomePage(),
+                            ),
                             (route) => false
                           );
+                          setState(() {
+                            circular = false;
+                          });
+                        }
+                        else {
+                          final snackBar = SnackBar(
+                            content: const Text("Something went wrong!!"),
+                            backgroundColor: Colors.red,
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          setState(() {
+                            circular = true;
+                          });
                         }
                       }
                     },
@@ -129,8 +146,10 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
                         borderRadius: BorderRadius.circular(50)
                       ),
                       child: Center(
-                        child: Text(
-                          "Update",
+                        child: circular
+                        ? CircularProgressIndicator()
+                        : Text(
+                          "Add",
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
@@ -174,8 +193,32 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
     );
   }
 
+  checkUser() async {
+    if (_regno.text.length == 0) {
+      setState(() {
+        // circular = false;
+        validate = false;
+        errorText = "Register Number Can't be empty";
+      });
+    } else {
+      var response = await networkHandler
+          .get("/student/checkusername/${_regno.text}");
+      if (response['Status']) {
+        setState(() {
+          // circular = false;
+          validate = false;
+          errorText = "Register Number already taken";
+        });
+      } else {
+        setState(() {
+          // circular = false;
+          validate = true;
+        });
+      }
+    }
+  }
+
   Widget nameTextField(){
-    _name.text = facultyModel.name.toString();
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -188,19 +231,19 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
           controller: _name,
           validator: (value) {
             if(value!.isEmpty) {
-              return "Faculty Name can't be empty";
+              return "Student Name can't be empty";
             }
             else if(value.length > 100){
-              return "Faculty Name length should be <= 100";
+              return "Student Name length should be <= 100";
             }
             return null;
           },
           decoration: InputDecoration(
-            labelText: "Faculty Name",
+            labelText: "Student Name",
             labelStyle: TextStyle(
               color: Color(0xFFe4e6eb)
             ),
-            helperText: "Enter your Faculty Name",
+            helperText: "Enter Student Name",
             helperStyle: TextStyle(
               color: Color(0xFFFFCFD8)
             ),
@@ -223,8 +266,142 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
     );
   }
 
+  Widget preferrednameTextField(){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        TextFormField(
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: "QuickSand",
+            fontWeight: FontWeight.w700
+          ),
+          controller: _preferredname,
+          validator: (value) {
+            if(value!.isEmpty) {
+              return "Faculty Preferred Name can't be empty";
+            }
+            else if(value.length > 100){
+              return "Faculty Preferred Name length should be <= 100";
+            }
+            return null;
+          },
+          decoration: InputDecoration(
+            labelText: "Faculty Preferred Name",
+            labelStyle: TextStyle(
+              color: Color(0xFFe4e6eb)
+            ),
+            helperText: "Enter Student Preferred Name",
+            helperStyle: TextStyle(
+              color: Color(0xFFFFCFD8)
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.lightBlueAccent,
+                width: 2
+              )
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.white,
+              )
+            ),
+          ),
+          maxLength: 100,
+          maxLines: null,
+        )
+      ],
+    );
+  }
+
+  Widget facultyidTextField(){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        TextFormField(
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: "QuickSand",
+            fontWeight: FontWeight.w700
+          ),
+          controller: _facultyid,
+          validator: (value) {
+            if(value!.isEmpty) {
+              return "Mentor ID can't be empty";
+            }
+            return null;
+          },
+          decoration: InputDecoration(
+            labelText: "Mentor ID",
+            labelStyle: TextStyle(
+              color: Color(0xFFe4e6eb)
+            ),
+            helperText: "Enter Mentor ID",
+            helperStyle: TextStyle(
+              color: Color(0xFFFFCFD8)
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.lightBlueAccent,
+                width: 2
+              )
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.white,
+              )
+            ),
+          ),
+          maxLength: 100,
+          maxLines: null,
+        )
+      ],
+    );
+  }
+  Widget passwordTextField(){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        TextFormField(
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: "QuickSand",
+            fontWeight: FontWeight.w700
+          ),
+          controller: _password,
+          validator: (value) {
+            if(value!.isEmpty) {
+              return "Student Password can't be empty";
+            }
+            return null;
+          },
+          decoration: InputDecoration(
+            labelText: "Student Password",
+            labelStyle: TextStyle(
+              color: Color(0xFFe4e6eb)
+            ),
+            helperText: "Enter Student Password",
+            helperStyle: TextStyle(
+              color: Color(0xFFFFCFD8)
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.lightBlueAccent,
+                width: 2
+              )
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.white,
+              )
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
   Widget mobileTextField(){
-    _mobile.text = facultyModel.mobile.toString();
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -249,7 +426,7 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
             labelStyle: TextStyle(
               color: Color(0xFFe4e6eb)
             ),
-            helperText: "Enter your Mobile Number",
+            helperText: "Enter Mobile Number",
             helperStyle: TextStyle(
               color: Color(0xFFFFCFD8)
             ),
@@ -265,15 +442,13 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
               )
             ),
           ),
-          maxLength: 10,
-          maxLines: null,
+          maxLength: 10
         )
       ],
     );
   }
 
   Widget emailTextField(){
-    _email.text = facultyModel.email.toString();
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -286,16 +461,16 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
           controller: _email,
           validator: (value) {
             if(value!.isEmpty) {
-              return "Faculty Email can't be empty";
+              return "Student Email can't be empty";
             }
             return null;
           },
           decoration: InputDecoration(
-            labelText: "Faculty Email",
+            labelText: "Student Email",
             labelStyle: TextStyle(
               color: Color(0xFFe4e6eb)
             ),
-            helperText: "Enter Faculty Email",
+            helperText: "Enter Student Email",
             helperStyle: TextStyle(
               color: Color(0xFFFFCFD8)
             ),
@@ -317,7 +492,6 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
   }
 
   Widget collegeTextField(){
-    _college.text = facultyModel.college.toString();
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -330,16 +504,16 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
           controller: _college,
           validator: (value) {
             if(value == null) {
-              return "Faculty College can't be empty";
+              return "Student College can't be empty";
             }
             return null;
           },
           decoration: InputDecoration(
-            labelText: "Faculty College",
+            labelText: "Student College",
             labelStyle: TextStyle(
               color: Color(0xFFe4e6eb)
             ),
-            helperText: "Enter Faculty College Name",
+            helperText: "Enter Student College Name",
             helperStyle: TextStyle(
               color: Color(0xFFFFCFD8)
             ),
@@ -361,8 +535,7 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
     );
   }
 
-  Widget departmentTextField(){
-    _department.text = facultyModel.department.toString();
+  Widget branchTextField(){
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -372,19 +545,19 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
             fontFamily: "QuickSand",
             fontWeight: FontWeight.w700
           ),
-          controller: _department,
+          controller: _branch,
           validator: (value) {
             if(value == null) {
-              return "Faculty Department can't be empty";
+              return "Student Branch can't be empty";
             }
             return null;
           },
           decoration: InputDecoration(
-            labelText: "Faculty Department",
+            labelText: "Student Branch",
             labelStyle: TextStyle(
               color: Color(0xFFe4e6eb)
             ),
-            helperText: "Enter Faculty Department",
+            helperText: "Enter Student Branch Name",
             helperStyle: TextStyle(
               color: Color(0xFFFFCFD8)
             ),
@@ -406,8 +579,7 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
     );
   }
 
-  Widget positionTextField(){
-    _position.text = facultyModel.position.toString();
+  Widget academicstartTextField(){
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -417,19 +589,19 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
             fontFamily: "QuickSand",
             fontWeight: FontWeight.w700
           ),
-          controller: _position,
+          controller: _academicstart,
           validator: (value) {
             if(value == null) {
-              return "Faculty Position can't be empty";
+              return "Student Academic Start Year can't be empty";
             }
             return null;
           },
           decoration: InputDecoration(
-            labelText: "Faculty Position",
+            labelText: "Student Academic Start Year",
             labelStyle: TextStyle(
               color: Color(0xFFe4e6eb)
             ),
-            helperText: "Enter Faculty position",
+            helperText: "Enter Student Academic Start Year",
             helperStyle: TextStyle(
               color: Color(0xFFFFCFD8)
             ),
@@ -451,8 +623,7 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
     );
   }
 
-  Widget qualificationTextField(){
-    _qualification.text = facultyModel.qualification.toString();
+  Widget academicendTextField(){
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -462,19 +633,64 @@ class _UpdateCancelFacultyState extends State<UpdateCancelFaculty> {
             fontFamily: "QuickSand",
             fontWeight: FontWeight.w700
           ),
-          controller: _qualification,
+          controller: _academicend,
           validator: (value) {
             if(value == null) {
-              return "Faculty Qualification can't be empty";
+              return "Student Academic End Year can't be empty";
             }
             return null;
           },
           decoration: InputDecoration(
-            labelText: "Faculty Qualification",
+            labelText: "Student Academic End Year",
             labelStyle: TextStyle(
               color: Color(0xFFe4e6eb)
             ),
-            helperText: "Enter Faculty Qualification",
+            helperText: "Enter Student Academic End Year",
+            helperStyle: TextStyle(
+              color: Color(0xFFFFCFD8)
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.lightBlueAccent,
+                width: 2
+              )
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Colors.white,
+              )
+            ),
+          ),
+          maxLines: null,
+        )
+      ],
+    );
+  }
+
+  Widget regnoTextField(){
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        TextFormField(
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: "QuickSand",
+            fontWeight: FontWeight.w700
+          ),
+          controller: _regno,
+          validator: (value) {
+            if(value == null) {
+              return "Student RegNo can't be empty";
+            }
+            return null;
+          },
+          decoration: InputDecoration(
+            errorText: validate ? null : errorText,
+            labelText: "Student RegNo",
+            labelStyle: TextStyle(
+              color: Color(0xFFe4e6eb)
+            ),
+            helperText: "Enter Student RegNo",
             helperStyle: TextStyle(
               color: Color(0xFFFFCFD8)
             ),
