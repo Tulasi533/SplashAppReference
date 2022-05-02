@@ -116,7 +116,7 @@ class _AboutEventState extends State<AboutEvent> {
                       cells: <DataCell>[
                         DataCell(Text("Registration Start Date")),
                         DataCell(VerticalDivider(color: Colors.black26, thickness: 1.5)),
-                        DataCell(Text(widget.item.regstartdate.toString()))
+                        DataCell(Text(convertDateFromString(widget.item.regstartdate.toString())))
                       ],
                     ),
                     DataRow(
@@ -137,14 +137,14 @@ class _AboutEventState extends State<AboutEvent> {
                       cells: <DataCell>[
                         DataCell(Text("Event Start Date")),
                         DataCell(VerticalDivider(color: Colors.black26, thickness: 1.5)),
-                        DataCell(Text(widget.item.eventstartdate.toString()))
+                        DataCell(Text(convertDateFromString(widget.item.eventstartdate.toString())))
                       ],
                     ),
                     DataRow(
                       cells: <DataCell>[
                         DataCell(Text("Event End Date")),
                         DataCell(VerticalDivider(color: Colors.black26, thickness: 1.5)),
-                        DataCell(Text(widget.item.eventenddate.toString()))
+                        DataCell(Text(convertDateFromString(widget.item.eventenddate.toString())))
                       ],
                     ),
                     if(widget.item.discription.toString() != "")
@@ -272,7 +272,8 @@ class _AboutEventState extends State<AboutEvent> {
   }
   String convertDateFromString(String strDate){
     DateTime todayDate = DateTime.parse(strDate);
-    print(todayDate);
-    return formatDate(todayDate, [d, '-', MM, '-', yyyy, ', ', H, ':', nn]);
+    var convertLocal = todayDate.toLocal();
+    print(convertLocal);
+    return formatDate(convertLocal, [d, '-', MM, '-', yyyy, ', ', H, ':', nn, ' ', am]);
  }
 }
