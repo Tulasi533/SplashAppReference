@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:splash_app/FacultyFlow/FacultyAddStudentPage.dart';
 import 'package:splash_app/FacultyFlow/FacultyCreateEventPage.dart';
 import 'package:splash_app/Model/facultyModel.dart';
 import 'package:splash_app/NetworkHandler.dart';
@@ -87,6 +88,27 @@ class _FacultyMenuPageState extends State<FacultyMenuPage> {
                   },
                   child: Text(
                     "Create Event",
+                    style: TextStyle(
+                      color: Colors.white,
+                      letterSpacing: 1,
+                      fontFamily: "QuickSand",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context, 
+                      MaterialPageRoute(
+                        builder: (context)=> FacultyAddStudentPage()
+                      )
+                    );
+                  },
+                  child: Text(
+                    "Manage your Students",
                     style: TextStyle(
                       color: Colors.white,
                       letterSpacing: 1,

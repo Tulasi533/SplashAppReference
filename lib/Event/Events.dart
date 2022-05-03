@@ -63,7 +63,7 @@ class _EventsState extends State<Events> {
             itemCount: data!.length,
             scrollDirection: Axis.horizontal
           ),
-        ):Center(child: Text("No Blogs Available",style:TextStyle(color: Colors.white)))
+        ):Center(child: Text("No Events Available",style:TextStyle(color: Colors.white)))
       ],
     );
   }

@@ -26,6 +26,9 @@ FacultyModel _$FacultyModelFromJson(Map<String, dynamic> json) => FacultyModel(
       myachievements: (json['myachievements'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      mystudents: (json['mystudents'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
       img: json['img'] as String?,
     );
 
@@ -44,5 +47,6 @@ Map<String, dynamic> _$FacultyModelToJson(FacultyModel instance) =>
       'myevents': instance.myevents,
       'myparticipations': instance.myparticipations,
       'myachievements': instance.myachievements,
+      'mystudents': instance.mystudents,
       'img': instance.img,
     };

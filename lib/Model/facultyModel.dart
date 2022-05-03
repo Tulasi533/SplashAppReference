@@ -18,6 +18,7 @@ class FacultyModel {
   List<String>? myevents;
   List<String>? myparticipations;
   List<String>? myachievements;
+  List<String>? mystudents;
   String? img;
   FacultyModel({
     this.facultyid,
@@ -33,6 +34,7 @@ class FacultyModel {
     this.myevents,
     this.myparticipations,
     this.myachievements,
+    this.mystudents,
     this.img
   });
 
