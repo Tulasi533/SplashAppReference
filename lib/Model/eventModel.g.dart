@@ -20,6 +20,9 @@ EventModel _$EventModelFromJson(Map<String, dynamic> json) => EventModel(
       scope: json['scope'] as String?,
       winnercriteria: json['winnercriteria'] as String?,
       organizer: json['organizer'] as String?,
+      participants: (json['participants'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
     );
 
 Map<String, dynamic> _$EventModelToJson(EventModel instance) =>
@@ -37,4 +40,5 @@ Map<String, dynamic> _$EventModelToJson(EventModel instance) =>
       'scope': instance.scope,
       'organizer': instance.organizer,
       'winnercriteria': instance.winnercriteria,
+      'participants': instance.participants,
     };

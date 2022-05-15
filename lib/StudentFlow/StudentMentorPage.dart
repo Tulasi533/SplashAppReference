@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:splash_app/Model/facultyModel.dart';
+import 'package:splash_app/Model/studentModel.dart';
 import 'package:splash_app/NetworkHandler.dart';
 
 class StudentMentorPage extends StatefulWidget {
@@ -14,6 +15,7 @@ class StudentMentorPage extends StatefulWidget {
 class _StudentMentorPageState extends State<StudentMentorPage> {
   final NetworkHandler networkHandler = NetworkHandler();
   FacultyModel facultyModel = FacultyModel();
+  StudentModel studentModel = StudentModel();
   bool circular = true;
   final storage = FlutterSecureStorage();
   @override
@@ -22,11 +24,13 @@ class _StudentMentorPageState extends State<StudentMentorPage> {
     fetchData();
   }
   void fetchData() async {
-    var response = await networkHandler.get("/student/getMentor/${widget.facultyId}");
-    setState(() {
-      facultyModel = FacultyModel.fromJson(response["data"][0]);
-      circular = false;
-    });
+    if(widget.facultyId != ""){
+      var response = await networkHandler.get("/student/getMentor/${widget.facultyId}");
+      setState(() {
+        facultyModel = FacultyModel.fromJson(response["data"][0]);
+        circular = false;
+      });
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -41,8 +45,18 @@ class _StudentMentorPageState extends State<StudentMentorPage> {
           },
         ),
       ),
-      body: circular 
-      ? CircularProgressIndicator() 
+      body: widget.facultyId == ""
+      ? Center(
+        child: Text(
+          "No Mentor Assigned☹",
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: "QuickSand",
+            fontSize: 22,
+            fontWeight: FontWeight.bold
+          )
+        )
+      ) 
       : Center(
         child: ListView(
           children: [

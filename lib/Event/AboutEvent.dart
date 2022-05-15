@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:splash_app/Model/eventModel.dart';
 import 'package:splash_app/NetworkHandler.dart';
 import 'package:date_format/date_format.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class AboutEvent extends StatefulWidget {
   final EventModel item;
@@ -14,6 +16,59 @@ class AboutEvent extends StatefulWidget {
 
 class _AboutEventState extends State<AboutEvent> {
   NetworkHandler networkHandler = NetworkHandler();
+  String? user;
+  String? text;
+  final storage = FlutterSecureStorage();
+  EventModel eventModel = new EventModel();
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkLogin();
+    print("hello ${user}");
+  }
+
+  void checkLogin() async{
+    var response = await networkHandler.get("/event/getEvent/${widget.item.id}");
+    setState(() {
+      eventModel = EventModel.fromJson(response["data"][0]);
+      print("hello ${eventModel.participants}");
+    });
+    String? token = await storage.read(key: "token");
+    Map<String, dynamic> decodedToken = JwtDecoder.decode(token.toString());
+    String? type = await storage.read(key: "type");
+    print(decodedToken);
+    if(token != null && type == "student"){
+      setState(() {
+        user = decodedToken["regno"];
+      });
+    }
+    else if(token != null && type == "faculty"){
+      setState(() {
+        user = decodedToken["facultyid"];
+        print(user);
+      });
+    }
+    else if(token != null && type == "admin"){
+      setState(() {
+        user = decodedToken["adminid"];
+      });
+    }
+    if(eventModel.participants!.contains(user) == false){
+      print(eventModel.participants!.contains(user));
+      print(user);
+      print("ok");
+      print(eventModel.participants);
+      setState(() {
+        text = "Register";
+      });
+    }
+    else{
+      print("ok r");
+      setState(() {
+        text = "Registered";
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -183,19 +238,40 @@ class _AboutEventState extends State<AboutEvent> {
               SizedBox(height: 30),
               if(widget.type.toString() == "upcoming") 
               InkWell(
-                onTap: (){
-                  
+                onTap: () async{
+                  if(eventModel.participants!.contains(user) == false) {
+                    var response = await networkHandler.patch("/event/addParticipant/${widget.item.id}/${user}", {});
+                    if(response.statusCode == 200 || response.statusCode == 201) {
+                      final snackBar = SnackBar(
+                        content: const Text("You successfully registered for the event"),
+                        backgroundColor: Colors.green,
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    }
+                    setState(() {
+                      text = "Registered";
+                      checkLogin();
+                    });
+                    
+                  }
+                  else{
+                    final snackBar = SnackBar(
+                      content: const Text("You already registered for the event"),
+                      backgroundColor: Colors.purple,
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                  }
                 },
                 child: Container(
                   height: 50,
-                  width: 150,
+                  width: 170,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
                     color: Color(0xFFFBC8D1)
                   ),
                   child: Center(
                     child: Text(
-                      "Register",
+                      text.toString(),
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 18,
@@ -209,7 +285,7 @@ class _AboutEventState extends State<AboutEvent> {
               if(widget.type.toString() == "past") 
               InkWell(
                 onTap: (){
-                  
+
                 },
                 child: Container(
                   height: 50,

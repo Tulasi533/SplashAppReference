@@ -18,6 +18,7 @@ class EventModel {
   String? scope;
   String? organizer;
   String? winnercriteria;
+  List<String>? participants;
   EventModel({
     this.name,
     this.id,
@@ -31,7 +32,8 @@ class EventModel {
     this.discription,
     this.scope,
     this.winnercriteria,
-    this.organizer
+    this.organizer,
+    this.participants
   });
 
   factory EventModel.fromJson(Map<String, dynamic> json) => _$EventModelFromJson(json);

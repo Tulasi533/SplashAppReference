@@ -8,6 +8,8 @@ import 'package:splash_app/Model/eventModel.dart';
 import 'package:splash_app/NetworkHandler.dart';
 import 'package:intl/intl.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:splash_app/NotificationApi.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class FacultyEventCreatePage extends StatefulWidget {
   const FacultyEventCreatePage({ Key? key }) : super(key: key);
@@ -34,6 +36,12 @@ class _FacultyEventCreatePageState extends State<FacultyEventCreatePage> {
   PickedFile? _imageFile;
   IconData iconphoto = Icons.image;
   NetworkHandler networkHandler = NetworkHandler();
+   @override 
+  void initState() {
+    super.initState();
+    NotificationApi.init();
+  }
+ 
   @override
   Widget build(BuildContext context) {
     //final format = DateFormat('d-MMM-YYYY, HH:mm');
@@ -739,6 +747,7 @@ class _FacultyEventCreatePageState extends State<FacultyEventCreatePage> {
   Widget addButton() {
     return Builder(builder: (context) => InkWell(
       onTap: () async{
+
         if(_imageFile != null && _globalkey.currentState!.validate()){
           EventModel eventModel = EventModel(
             name: _name.text, 
@@ -758,6 +767,7 @@ class _FacultyEventCreatePageState extends State<FacultyEventCreatePage> {
           print(response.body);
 
           if(response.statusCode == 200 || response.statusCode == 201) {
+            NotificationApi.showNotification(title: "New Event added🎉", body: _name.text, payload: "hi this is tulasi");
             String id = json.decode(response.body)["data"];
             var imageResponse = await networkHandler.patchImage(
               "/event/add/coverImage/$id", _imageFile!.path);
