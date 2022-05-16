@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:splash_app/Event/Events.dart';
+import 'package:splash_app/Event/Winners.dart';
 import 'package:splash_app/FacultyFlow/FacultyMenuPage.dart';
 
 class FacultyHomePage extends StatefulWidget {
@@ -36,6 +37,8 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            Winners(),
+            Divider(thickness: 1.5, color: Colors.white),
             Events(url: "/event/getUpcomingEvents", heading: "Upcoming Events"),
             Divider(thickness: 1.5, color: Colors.white),
             Events(url: "/event/getOngoingEvents", heading: "Ongoing Events"),

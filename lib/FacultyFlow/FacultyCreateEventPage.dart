@@ -773,8 +773,11 @@ class _FacultyEventCreatePageState extends State<FacultyEventCreatePage> {
               "/event/add/coverImage/$id", _imageFile!.path);
             print(imageResponse.statusCode);
             if(imageResponse.statusCode == 200 || imageResponse.statusCode == 201){
-              Scaffold.of(context).showSnackBar(
-              SnackBar(content: Text("Event added successfully")));
+              final snackBar = SnackBar(
+                content: const Text("Event Created Successfully!!"),
+                backgroundColor: Colors.green,
+              );
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
               Navigator.pushAndRemoveUntil(
                 context, 
                 MaterialPageRoute(builder: (context) => FacultyHomePage()), 

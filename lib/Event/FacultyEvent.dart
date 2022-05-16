@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:splash_app/FacultyFlow/FacultyAddWinnersPage.dart';
 import 'package:splash_app/Model/eventModel.dart';
 import 'package:splash_app/Model/superModel.dart';
 import 'package:splash_app/NetworkHandler.dart';
@@ -96,16 +97,189 @@ class _FacultyEventState extends State<FacultyEvent> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
-          children: widget.list.map((option) => new Text(
-            option,
-            style: TextStyle(
-              color: Color(0xFFfabbf4),
-              fontFamily: "QuickSand",
-              fontWeight: FontWeight.bold,
-              fontSize: 15
-            ),
-          )).toList()
+          children: [
+            if (widget.heading == "Upcoming Events") ...[
+              InkWell(
+                onTap: (){
+
+                },
+                child: Text(
+                  "Update Event Details",
+                  style: TextStyle(
+                    color: Color(0xFFfabbf4),
+                    fontFamily: "QuickSand",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                  ),
+                )
+              ),
+              InkWell(
+                onTap: (){
+                  
+                },
+                child: Text(
+                  "Manage Coordinators",
+                  style: TextStyle(
+                    color: Color(0xFFfabbf4),
+                    fontFamily: "QuickSand",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                  ),
+                )
+              ),
+              InkWell(
+                onTap: (){
+                  
+                },
+                child: Text(
+                  "Track Registrations",
+                  style: TextStyle(
+                    color: Color(0xFFfabbf4),
+                    fontFamily: "QuickSand",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                  ),
+                )
+              ),
+              InkWell(
+                onTap: (){
+                  
+                },
+                child: Text(
+                  "Delete Event",
+                  style: TextStyle(
+                    color: Color(0xFFfabbf4),
+                    fontFamily: "QuickSand",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                  ),
+                )
+              ),
+            ] 
+            else if(widget.heading == "Ongoing Events")...[
+              InkWell(
+                onTap: (){
+                  
+                },
+                child: Text(
+                  "Manage Coordinators",
+                  style: TextStyle(
+                    color: Color(0xFFfabbf4),
+                    fontFamily: "QuickSand",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                  ),
+                )
+              ),
+              InkWell(
+                onTap: (){
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(
+                      builder: (context)=> FacultyAddWinnersPage(item: item)
+                    )
+                  );
+                },
+                child: Text(
+                  "Add Winners",
+                  style: TextStyle(
+                    color: Color(0xFFfabbf4),
+                    fontFamily: "QuickSand",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                  ),
+                )
+              ),
+              InkWell(
+                onTap: (){
+                  
+                },
+                child: Text(
+                  "Add Certificates",
+                  style: TextStyle(
+                    color: Color(0xFFfabbf4),
+                    fontFamily: "QuickSand",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                  ),
+                )
+              ),
+            ]
+            else ...[
+              InkWell(
+                onTap: (){
+                  
+                },
+                child: Text(
+                  "Manage Coordinators",
+                  style: TextStyle(
+                    color: Color(0xFFfabbf4),
+                    fontFamily: "QuickSand",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                  ),
+                )
+              ),
+              InkWell(
+                onTap: (){
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(
+                      builder: (context)=> FacultyAddWinnersPage(item: item)
+                    )
+                  );
+                },
+                child: Text(
+                  "Add Winners",
+                  style: TextStyle(
+                    color: Color(0xFFfabbf4),
+                    fontFamily: "QuickSand",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                  ),
+                )
+              ),
+              InkWell(
+                onTap: (){
+                  
+                },
+                child: Text(
+                  "Add Certificates",
+                  style: TextStyle(
+                    color: Color(0xFFfabbf4),
+                    fontFamily: "QuickSand",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                  ),
+                )
+              ),
+              InkWell(
+                onTap: (){
+                  
+                },
+                child: Text(
+                  "Delete Event",
+                  style: TextStyle(
+                    color: Color(0xFFfabbf4),
+                    fontFamily: "QuickSand",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                  ),
+                )
+              ),
+            ]
+          ],
+          // children: widget.list.map((option) => new Text(
+          //   option,
+          //   style: TextStyle(
+          //     color: Color(0xFFfabbf4),
+          //     fontFamily: "QuickSand",
+          //     fontWeight: FontWeight.bold,
+          //     fontSize: 15
+          //   ),
+          // )).toList()
         )
+
       ]
     );
   }
