@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:splash_app/Model/eventModel.dart';
+import 'package:splash_app/Model/studentModel.dart';
 import 'package:splash_app/NetworkHandler.dart';
 import 'package:date_format/date_format.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
@@ -18,29 +19,37 @@ class _AboutEventState extends State<AboutEvent> {
   NetworkHandler networkHandler = NetworkHandler();
   String? user;
   String? text;
+  String? type;
   final storage = FlutterSecureStorage();
   EventModel eventModel = new EventModel();
+  StudentModel studentModel = new StudentModel();
   void initState() {
     // TODO: implement initState
     super.initState();
     checkLogin();
-    print("hello ${user}");
   }
 
   void checkLogin() async{
+    print("HI");
     var response = await networkHandler.get("/event/getEvent/${widget.item.id}");
     setState(() {
+      print("HI2");
       eventModel = EventModel.fromJson(response["data"][0]);
-      print("hello ${eventModel.participants}");
+      print("hello ${eventModel}");
     });
     String? token = await storage.read(key: "token");
     Map<String, dynamic> decodedToken = JwtDecoder.decode(token.toString());
-    String? type = await storage.read(key: "type");
-    print(decodedToken);
+    type = await storage.read(key: "type");
     if(token != null && type == "student"){
       setState(() {
         user = decodedToken["regno"];
       });
+      var response = await networkHandler.get("/student/getStudent/${user}");
+      setState(() {
+        studentModel = StudentModel.fromJson(response["data"][0]);
+        print(studentModel.name);
+      });
+      
     }
     else if(token != null && type == "faculty"){
       setState(() {
@@ -53,20 +62,49 @@ class _AboutEventState extends State<AboutEvent> {
         user = decodedToken["adminid"];
       });
     }
-    if(eventModel.participants!.contains(user) == false){
-      print(eventModel.participants!.contains(user));
-      print(user);
-      print("ok");
-      print(eventModel.participants);
-      setState(() {
-        text = "Register";
-      });
+    if(type == "faculty" || studentModel.facultyid == ""){
+      if(eventModel.participants!.contains(user) == false){
+        print(eventModel.participants!.contains(user));
+        print(user);
+        print("ok");
+        print(eventModel.participants);
+        setState(() {
+          text = "Register";
+        });
+      }
+      else{
+        print("ok r");
+        setState(() {
+          text = "Registered";
+        });
+      }
     }
-    else{
-      print("ok r");
-      setState(() {
-        text = "Registered";
-      });
+    else {
+      var response = await networkHandler.get("/approval/checkapproval/${user}/${widget.item.id}");
+      if(response['Status'] == null){
+        setState(() {
+          text = "Register";
+        });
+        
+      }
+      else if(response['Status'] == "still") {
+        setState(() {
+          text = "Waiting for the response";
+        });
+        
+      }
+      else if(response['Status'] == true){
+        setState(() {
+          text = "Registered";
+        });
+        
+      }
+      else if(response['Status'] == false){
+        setState(() {
+          text = "Request Denied";
+        });
+        
+      }
     }
   }
   @override
@@ -240,19 +278,56 @@ class _AboutEventState extends State<AboutEvent> {
               InkWell(
                 onTap: () async{
                   if(eventModel.participants!.contains(user) == false) {
-                    var response = await networkHandler.patch("/event/addParticipant/${widget.item.id}/${user}", {});
-                    if(response.statusCode == 200 || response.statusCode == 201) {
-                      final snackBar = SnackBar(
-                        content: const Text("You successfully registered for the event"),
-                        backgroundColor: Colors.green,
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    if(type == "faculty" || studentModel.facultyid == ""){
+                      var response = await networkHandler.patch("/event/addParticipant/${widget.item.id}/${user}", {});
+                      if(response.statusCode == 200 || response.statusCode == 201) {
+                        final snackBar = SnackBar(
+                          content: const Text("You successfully registered for the event"),
+                          backgroundColor: Colors.green,
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      }
+                      setState(() {
+                        checkLogin();
+                      });
                     }
-                    setState(() {
-                      text = "Registered";
-                      checkLogin();
-                    });
-                    
+                    else{
+                      var response = await networkHandler.get("/approval/checkapproval/${user}/${widget.item.id}");
+                      if (response['Status'] == true) {
+                        setState(() {
+                          checkLogin();
+                        });
+                        final snackBar = SnackBar(
+                          content: const Text("You successfully registered for the event"),
+                          backgroundColor: Colors.green,
+                        );
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      }
+                      else if(response['Status'] == false) {
+                        setState(() {
+                          text = "Request Denied";
+                        });
+                      }
+                      else if(response['Status'] == "still") {
+                        setState(() {
+                          text = "Waiting for the response";
+                        });
+                      }
+                      else {
+                        Map<String, dynamic> data = {
+                          "regno": user,
+                          "eventname": widget.item.name,
+                          "eventid": widget.item.id,
+                          "facultyid": studentModel.facultyid
+                        };
+                        var response = await networkHandler.post1("/approval/addApproval", data);
+                        if(response.statusCode == 200 || response.statusCode == 201) {
+                          setState(() {
+                            text = "Waiting for the response";
+                          });
+                        }
+                      }
+                    }
                   }
                   else{
                     final snackBar = SnackBar(
@@ -264,7 +339,7 @@ class _AboutEventState extends State<AboutEvent> {
                 },
                 child: Container(
                   height: 50,
-                  width: 170,
+                  width: 220,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
                     color: Color(0xFFFBC8D1)

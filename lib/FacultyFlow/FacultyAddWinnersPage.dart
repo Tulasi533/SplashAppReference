@@ -96,12 +96,11 @@ class _FacultyAddWinnersPageState extends State<FacultyAddWinnersPage> {
                     },
                     tileColor: Colors.white,
                     leading: Image.network(
-                      "https://image.shutterstock.com/image-vector/events-colorful-typography-banner-260nw-1356206768.jpg",
+                      "http://192.168.0.103:5000/uploads/${d}.jpg",
                       fit: BoxFit.cover,
                       width: 50,
                       height: 50
-                    ) 
-                    ,
+                    ),
                     title: Text(
                       d,
                       style: TextStyle(
