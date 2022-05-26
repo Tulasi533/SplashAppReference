@@ -22,7 +22,6 @@ class _FacultyStudentApprovalPageState extends State<FacultyStudentApprovalPage>
   @override
   void initState() {
     // TODO: implement initState
-    foundItems = data;
     super.initState();
     fetchData();
   }
@@ -31,6 +30,7 @@ class _FacultyStudentApprovalPageState extends State<FacultyStudentApprovalPage>
     superApprovalModel = SuperApprovalModel.fromJson(response);
     setState(() {
       data = superApprovalModel.data;
+      foundItems = data;
     });
   }
   @override
@@ -257,7 +257,9 @@ class _FacultyStudentApprovalPageState extends State<FacultyStudentApprovalPage>
   void searchFaculty(String query) {
     List<ApprovalModel>? results = [];
     if(query.isEmpty){
-      results = [];
+      setState(() {
+        results = data;
+      });
     }
     else{
       results = data!

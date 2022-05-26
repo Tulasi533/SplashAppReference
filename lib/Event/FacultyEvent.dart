@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:splash_app/FacultyFlow/FacultyAddWinnersPage.dart';
+import 'package:splash_app/FacultyFlow/FacultyTrackRegistrationsPage.dart';
 import 'package:splash_app/Model/eventModel.dart';
 import 'package:splash_app/Model/superModel.dart';
 import 'package:splash_app/NetworkHandler.dart';
@@ -212,6 +213,25 @@ class _FacultyEventState extends State<FacultyEvent> {
                 },
                 child: Text(
                   "Manage Coordinators",
+                  style: TextStyle(
+                    color: Color(0xFFfabbf4),
+                    fontFamily: "QuickSand",
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                  ),
+                )
+              ),
+              InkWell(
+                onTap: (){
+                  Navigator.push(
+                    context, 
+                    MaterialPageRoute(
+                      builder: (context)=> FacultyTrackRegistrationsPage(item: item)
+                    )
+                  );
+                },
+                child: Text(
+                  "Track Registrations",
                   style: TextStyle(
                     color: Color(0xFFfabbf4),
                     fontFamily: "QuickSand",
