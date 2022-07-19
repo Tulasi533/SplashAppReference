@@ -114,7 +114,7 @@ class _DeleteFacultyPageState extends State<DeleteFacultyPage> {
                     },
                     tileColor: Colors.white,
                     leading: (d.img.toString()).contains(d.facultyid.toString()) ? Image.network(
-                      "http://192.168.0.103:5000/uploads/${d.facultyid}.jpg",
+                      "http://192.168.0.105:5000/uploads/${d.facultyid}.jpg",
                       fit: BoxFit.cover,
                       width: 50,
                       height: 50

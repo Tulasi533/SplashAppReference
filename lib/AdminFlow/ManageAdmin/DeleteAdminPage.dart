@@ -115,7 +115,7 @@ class _DeleteAdminPageState extends State<DeleteAdminPage> {
                     },
                     tileColor: Colors.white,
                     leading: (d.img.toString()).contains(d.adminid.toString()) ? Image.network(
-                      "http://192.168.0.103:5000/uploads/${d.adminid}.jpg",
+                      "http://192.168.0.105:5000/uploads/${d.adminid}.jpg",
                       fit: BoxFit.cover,
                       width: 50,
                       height: 50

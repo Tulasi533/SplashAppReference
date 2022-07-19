@@ -96,7 +96,7 @@ class _FacultyAddWinnersPageState extends State<FacultyAddWinnersPage> {
                     },
                     tileColor: Colors.white,
                     leading: Image.network(
-                      "http://192.168.0.103:5000/uploads/${d}.jpg",
+                      "http://192.168.0.105:5000/uploads/${d}.jpg",
                       fit: BoxFit.cover,
                       width: 50,
                       height: 50

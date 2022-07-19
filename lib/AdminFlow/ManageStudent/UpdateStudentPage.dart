@@ -114,7 +114,7 @@ class _UpdateStudentPageState extends State<UpdateStudentPage> {
                     },
                     tileColor: Colors.white,
                     leading: (d.img.toString()).contains(d.regno.toString()) ? Image.network(
-                      "http://192.168.0.103:5000/uploads/${d.regno}.jpg",
+                      "http://192.168.0.105:5000/uploads/${d.regno}.jpg",
                       fit: BoxFit.cover,
                       width: 50,
                       height: 50
